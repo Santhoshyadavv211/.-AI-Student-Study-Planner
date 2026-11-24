@@ -1,24 +1,195 @@
-# Compiled class file
-*.class
 
-# Log file
-*.log
+import java.util.ArrayList;
+import java.util.Scanner;
 
-# BlueJ files
-*.ctxt
+class StudyTask {
+    String subject;
+    String task;
+    int hours;
+    boolean completed;
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+    StudyTask(String subject, String task, int hours) {
+        this.subject = subject;
+        this.task = task;
+        this.hours = hours;
+        this.completed = false;
+    }
+}
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+public class AIStudentStudyPlanner {
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+    static ArrayList<StudyTask> tasks = new ArrayList<>();
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) {
+
+        int choice;
+
+        do {
+            System.out.println("\n===== AI STUDENT STUDY PLANNER =====");
+            System.out.println("1. Add Study Task");
+            System.out.println("2. View Study Tasks");
+            System.out.println("3. Mark Task Completed");
+            System.out.println("4. Study Recommendations");
+            System.out.println("5. View Study Progress");
+            System.out.println("6. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    addTask();
+                    break;
+
+                case 2:
+                    viewTasks();
+                    break;
+
+                case 3:
+                    completeTask();
+                    break;
+
+                case 4:
+                    recommendStudy();
+                    break;
+
+                case 5:
+                    showProgress();
+                    break;
+
+                case 6:
+                    System.out.println("Thank you for using Study Planner!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 6);
+    }
+
+    static void addTask() {
+
+        System.out.print("Enter Subject Name: ");
+        String subject = sc.nextLine();
+
+        System.out.print("Enter Study Topic: ");
+        String task = sc.nextLine();
+
+        System.out.print("Enter Study Hours: ");
+        int hours = sc.nextInt();
+        sc.nextLine();
+
+        if (hours <= 0) {
+            System.out.println("Please enter valid study hours.");
+            return;
+        }
+
+        tasks.add(new StudyTask(subject, task, hours));
+
+        System.out.println("Study Task Added Successfully!");
+    }
+
+    static void viewTasks() {
+
+        if (tasks.isEmpty()) {
+            System.out.println("No study tasks available.");
+            return;
+        }
+
+        System.out.println("\n----- YOUR STUDY TASKS -----");
+
+        for (int i = 0; i < tasks.size(); i++) {
+
+            StudyTask t = tasks.get(i);
+
+            System.out.println("Task ID: " + (i + 1));
+            System.out.println("Subject: " + t.subject);
+            System.out.println("Topic: " + t.task);
+            System.out.println("Hours: " + t.hours);
+            System.out.println("Status: " +
+                    (t.completed ? "Completed" : "Pending"));
+
+            System.out.println("---------------------------");
+        }
+    }
+
+    static void completeTask() {
+
+        viewTasks();
+
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        System.out.print("Enter Task ID to complete: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        if (id >= 1 && id <= tasks.size()) {
+            tasks.get(id - 1).completed = true;
+            System.out.println("Task Completed Successfully!");
+        } else {
+            System.out.println("Invalid Task ID!");
+        }
+    }
+
+    static void recommendStudy() {
+
+        if (tasks.isEmpty()) {
+            System.out.println("Add study tasks first!");
+            return;
+        }
+
+        StudyTask recommended = null;
+
+        for (StudyTask t : tasks) {
+
+            if (!t.completed) {
+
+                if (recommended == null ||
+                    t.hours > recommended.hours) {
+
+                    recommended = t;
+                }
+            }
+        }
+
+        if (recommended != null) {
+            System.out.println("\n===== STUDY RECOMMENDATION =====");
+            System.out.println("Recommended Subject: " +
+                    recommended.subject);
+            System.out.println("Topic: " + recommended.task);
+            System.out.println("Suggested Hours: " +
+                    recommended.hours);
+        } else {
+            System.out.println("All tasks are completed!");
+        }
+    }
+
+    static void showProgress() {
+
+        int completed = 0;
+
+        for (StudyTask t : tasks) {
+            if (t.completed) {
+                completed++;
+            }
+        }
+
+        int total = tasks.size();
+
+        System.out.println("\n===== STUDY PROGRESS =====");
+        System.out.println("Total Tasks: " + total);
+        System.out.println("Completed Tasks: " + completed);
+        System.out.println("Pending Tasks: " + (total - completed));
+
+        if (total > 0) {
+            double percentage = (completed * 100.0) / total;
+            System.out.printf("Progress: %.2f%%\n", percentage);
+        }
+    }
+}
